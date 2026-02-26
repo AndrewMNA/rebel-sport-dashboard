@@ -669,7 +669,7 @@
                         </div>
 
                         {showWeekModal && selectedWeek && (
-                            <div style={{
+                            <div onClick={() => {setShowWeekModal(false); setSelectedWeek(null);}} style={{
                                 position: 'fixed',
                                 top: 0,
                                 left: 0,
@@ -679,9 +679,10 @@
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                zIndex: 1000
+                                zIndex: 1000,
+                                padding: '20px'
                             }}>
-                                <div style={{
+                                <div onClick={(e) => e.stopPropagation()} style={{
                                     background: '#0f172a',
                                     borderRadius: '20px',
                                     padding: '40px',
@@ -689,16 +690,27 @@
                                     maxHeight: '80vh',
                                     overflow: 'auto',
                                     border: '1px solid rgba(99, 102, 241, 0.2)',
-                                    boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+                                    boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+                                    width: '100%'
                                 }}>
                                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px'}}>
-                                        <h2 style={{color: '#f1f5f9', fontSize: '1.8em', fontWeight: 800}}>Week of {selectedWeek}</h2>
-                                        <button onClick={() => {setShowWeekModal(false); setSelectedWeek(null);}} style={{background: 'none', border: 'none', color: '#cbd5e1', fontSize: '1.5em', cursor: 'pointer'}}>✕</button>
+                                        <h2 style={{color: '#f1f5f9', fontSize: '1.8em', fontWeight: 800, margin: 0}}>Week of {selectedWeek}</h2>
+                                        <button onClick={() => {setShowWeekModal(false); setSelectedWeek(null);}} style={{
+                                            background: 'rgba(99, 102, 241, 0.2)',
+                                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                                            color: '#e2e8f0',
+                                            padding: '8px 12px',
+                                            borderRadius: '8px',
+                                            fontSize: '1.2em',
+                                            cursor: 'pointer',
+                                            fontWeight: 700,
+                                            transition: 'all 0.3s'
+                                        }}>✕</button>
                                     </div>
 
                                     <div style={{marginBottom: '30px'}}>
                                         <h3 style={{color: '#e2e8f0', marginBottom: '15px', fontSize: '1.2em'}}>Products Sold This Week</h3>
-                                        {getWeekProducts.length > 0 ? (
+                                        {getWeekProducts && getWeekProducts.length > 0 ? (
                                             <div style={{
                                                 display: 'grid',
                                                 gap: '15px'
@@ -710,11 +722,11 @@
                                                         borderRadius: '10px',
                                                         border: '1px solid rgba(99, 102, 241, 0.2)'
                                                     }}>
-                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}>
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '10px'}}>
                                                             <span style={{color: '#f1f5f9', fontWeight: 700}}>{product.product}</span>
                                                             <span style={{color: '#cbd5e1'}}>Color: {product.color}</span>
                                                         </div>
-                                                        <div style={{display: 'flex', justifyContent: 'space-between', gap: '20px', fontSize: '0.95em'}}>
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', gap: '20px', fontSize: '0.95em', flexWrap: 'wrap'}}>
                                                             <span style={{color: '#60a5fa'}}>Sales: ${product.sales.toLocaleString()}</span>
                                                             <span style={{color: '#cbd5e1'}}>Units: {product.units.toLocaleString()}</span>
                                                         </div>
@@ -722,20 +734,24 @@
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div style={{color: '#64748b'}}>No products sold this week</div>
+                                            <div style={{color: '#64748b', padding: '20px', textAlign: 'center'}}>No products sold this week</div>
                                         )}
                                     </div>
 
-                                    <button onClick={() => {setShowWeekModal(false);}} style={{
-                                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                                        color: 'white',
-                                        border: 'none',
-                                        padding: '12px 24px',
-                                        borderRadius: '10px',
-                                        cursor: 'pointer',
-                                        fontWeight: 700,
-                                        fontSize: '1em'
-                                    }}>Close</button>
+                                    <div style={{display: 'flex', gap: '10px'}}>
+                                        <button onClick={() => {setShowWeekModal(false);}} style={{
+                                            flex: 1,
+                                            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '12px 24px',
+                                            borderRadius: '10px',
+                                            cursor: 'pointer',
+                                            fontWeight: 700,
+                                            fontSize: '1em',
+                                            transition: 'all 0.3s'
+                                        }}>Close Modal</button>
+                                    </div>
                                 </div>
                             </div>
                         )}
