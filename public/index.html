@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muscle Nation x Rebel Sport</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/recharts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #0f172a;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 60px rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="rgba(255,255,255,0.05)"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+            opacity: 0.1;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+        .controls {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px 40px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .control-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group label {
+            font-weight: 700;
+            color: #e2e8f0;
+            font-size: 1.05em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95em;
+            position: relative;
+            overflow: hidden;
+        }
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        button:hover::before {
+            opacity: 1;
+        }
+        .btn-filter {
+            background: rgba(226, 232, 240, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .btn-filter:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+        }
+        .btn-filter.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        .main-content {
+            padding: 50px 40px;
+        }
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .kpi-card {
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        .kpi-card:hover::before {
+            left: 100%;
+        }
+        .kpi-card:hover {
+            transform: translateY(-8px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        .kpi-card.secondary {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+        }
+        .kpi-card.tertiary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+        }
+        .kpi-label {
+            font-size: 0.85em;
+            opacity: 0.85;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #f1f5f9;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        .table-container {
+            overflow-x: auto;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+        th {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            color: #cbd5e1;
+        }
+        tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.01);
+        }
+        tr:hover td {
+            color: #f1f5f9;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .currency {
+            font-weight: 700;
+            color: #60a5fa;
+            font-size: 1.05em;
+        }
+        .no-data {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6366f1;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        function SalesDashboard() {
+            const [salesData, setSalesData] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [timeFilter, setTimeFilter] = useState('current-month');
+            const [hoveredPoint, setHoveredPoint] = useState(null);
+            const [tooltipPos, setTooltipPos] = useState({x: 0, y: 0});
+
+            useEffect(() => {
+                setLoading(true);
+                fetch('/api/sales-data')
+                    .then(r => r.json())
+                    .then(data => {
+                        console.log('Loaded', data.length, 'records');
+                        setSalesData(data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error('Failed to load data:', err);
+                        setLoading(false);
+                    });
+            }, []);
+
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentYear = currentDate.getFullYear();
+
+            const filteredData = useMemo(() => {
+                return salesData.filter(record => {
+                    switch(timeFilter) {
+                        case 'current-month':
+                            return record.month === currentMonth && record.year === currentYear;
+                        case 'last-3-months':
+                            let m = currentMonth - 3, y = currentYear;
+                            if (m <= 0) { m += 12; y--; }
+                            return (record.year > y) || (record.year === y && record.month >= m) || (record.year === currentYear && record.month <= currentMonth);
+                        case 'last-6-months':
+                            m = currentMonth - 6; y = currentYear;
+                            if (m <= 0) { m += 12; y--; }
+                            return (record.year > y) || (record.year === y && record.month >= m) || (record.year === currentYear && record.month <= currentMonth);
+                        case 'last-12-months':
+                            return (record.year > currentYear - 1) || (record.year === currentYear - 1 && record.month >= currentMonth) || (record.year === currentYear);
+                        case 'last-year':
+                            return record.year === currentYear - 1;
+                        case 'ytd':
+                            return record.year === currentYear;
+                        case 'all-time':
+                            return true;
+                        default:
+                            return true;
+                    }
+                });
+            }, [salesData, timeFilter]);
+
+            const totalSales = filteredData.reduce((sum, r) => sum + r.sales, 0);
+            const uniqueWeeks = new Set(filteredData.map(r => r.week)).size;
+            const uniqueProducts = new Set(filteredData.map(r => r.product)).size;
+            const avgWeeklySales = uniqueWeeks > 0 ? totalSales / uniqueWeeks : 0;
+
+            const productSales = useMemo(() => {
+                const grouped = {};
+                filteredData.forEach(record => {
+                    const key = `${record.product} - ${record.color}`;
+                    if (!grouped[key]) grouped[key] = { product: record.product, color: record.color, sales: 0, units: 0 };
+                    grouped[key].sales += record.sales;
+                    grouped[key].units += record.units;
+                });
+                return Object.values(grouped).sort((a, b) => b.sales - a.sales);
+            }, [filteredData]);
+
+            const weeklySales = useMemo(() => {
+                const grouped = {};
+                filteredData.forEach(record => {
+                    if (!grouped[record.week]) grouped[record.week] = 0;
+                    grouped[record.week] += record.sales;
+                });
+                return Object.entries(grouped).map(([week, sales]) => ({ week, sales })).sort((a, b) => new Date(a.week.split('/').reverse().join('-')) - new Date(b.week.split('/').reverse().join('-')));
+            }, [filteredData]);
+
+            const filterLabel = { 'current-month': 'Current Month', 'last-3-months': 'Last 3 Months', 'last-6-months': 'Last 6 Months', 'last-12-months': 'Last 12 Months', 'last-year': 'Last Year', 'ytd': 'Year to Date', 'all-time': 'All Time' };
+
+            if (loading) {
+                return (
+                    <div className="container">
+                        <div className="header"><h1>Muscle Nation x Rebel Sport</h1></div>
+                        <div className="main-content"><div className="loading">Loading your sales data... 📊</div></div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>Muscle Nation x Rebel Sport</h1>
+                        <p>Weekly Sales Performance & Analytics</p>
+                    </div>
+
+                    <div className="controls">
+                        <div className="control-group">
+                            <label>Time Period:</label>
+                            <div className="button-group">
+                                {['current-month', 'last-3-months', 'last-6-months', 'last-12-months', 'last-year', 'ytd', 'all-time'].map(filter => (
+                                    <button key={filter} className={`btn-filter ${timeFilter === filter ? 'active' : ''}`} onClick={() => setTimeFilter(filter)}>
+                                        {filterLabel[filter]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="main-content">
+                        <div className="kpi-section">
+                            <div className="kpi-card">
+                                <div className="kpi-label">Total Sales</div>
+                                <div className="kpi-value">${totalSales.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                                <div className="kpi-label" style={{fontSize: '0.75em'}}>{filterLabel[timeFilter]}</div>
+                            </div>
+                            <div className="kpi-card secondary">
+                                <div className="kpi-label">Weekly Average</div>
+                                <div className="kpi-value">${avgWeeklySales.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                                <div className="kpi-label" style={{fontSize: '0.75em'}}>{uniqueWeeks} weeks of data</div>
+                            </div>
+                            <div className="kpi-card tertiary">
+                                <div className="kpi-label">Products Sold</div>
+                                <div className="kpi-value">{uniqueProducts}</div>
+                                <div className="kpi-label" style={{fontSize: '0.75em'}}>Unique SKUs</div>
+                            </div>
+                        </div>
+
+                        <div className="section-title">📈 Sales Trend</div>
+                        <div className="table-container" style={{height: '450px', position: 'relative'}}>
+                            {weeklySales.length > 0 ? (
+                                <div style={{position: 'relative', width: '100%', height: '100%'}}>
+                                    <svg viewBox="0 0 1200 350" style={{width: '100%', height: '100%', position: 'relative', zIndex: 1}}>
+                                        {(() => {
+                                            const maxSales = Math.max(...weeklySales.map(w => w.sales));
+                                            const points = weeklySales.map((w, i) => {
+                                                const x = (i / (weeklySales.length - 1 || 1)) * 1000 + 100;
+                                                const y = 280 - (w.sales / maxSales) * 200;
+                                                return {x, y, sales: w.sales, week: w.week};
+                                            });
+
+                                            const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+                                            return (
+                                                <>
+                                                    {/* Gradient fill under line */}
+                                                    <defs>
+                                                        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                            <stop offset="0%" style={{stopColor: '#667eea', stopOpacity: 0.3}} />
+                                                            <stop offset="100%" style={{stopColor: '#667eea', stopOpacity: 0}} />
+                                                        </linearGradient>
+                                                    </defs>
+
+                                                    {/* Grid lines */}
+                                                    {[0, 1, 2, 3, 4].map(i => (
+                                                        <line key={`grid-${i}`} x1="100" y1={280 - (i * 50)} x2="1100" y2={280 - (i * 50)} stroke="#e8e8e8" strokeWidth="1" strokeDasharray="3,3" />
+                                                    ))}
+
+                                                    {/* Axes */}
+                                                    <line x1="100" y1="280" x2="1100" y2="280" stroke="#333" strokeWidth="2.5" />
+                                                    <line x1="100" y1="80" x2="100" y2="280" stroke="#333" strokeWidth="2.5" />
+
+                                                    {/* Area under line */}
+                                                    <path d={pathData + ' L ' + points[points.length - 1].x + ' 280 L ' + points[0].x + ' 280 Z'} fill="url(#lineGradient)" />
+
+                                                    {/* Line with shadow effect */}
+                                                    <path d={pathData} stroke="#667eea" strokeWidth="4" fill="none" opacity="0.3" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d={pathData} stroke="#667eea" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+                                                    {/* Y-axis labels */}
+                                                    {[0, 1, 2, 3, 4].map(i => (
+                                                        <text key={`ylabel-${i}`} x="85" y={285 - (i * 50)} fontSize="11" fill="#666" textAnchor="end" dominantBaseline="middle">
+                                                            ${(i * maxSales / 4 / 1000).toFixed(0)}k
+                                                        </text>
+                                                    ))}
+
+                                                    {/* Data points with larger hit areas */}
+                                                    {points.map((p, i) => (
+                                                        <g key={`point-${i}`}>
+                                                            {/* Invisible larger circle for better hover area */}
+                                                            <circle
+                                                                cx={p.x}
+                                                                cy={p.y}
+                                                                r="30"
+                                                                fill="transparent"
+                                                                style={{cursor: 'pointer', pointerEvents: 'auto'}}
+                                                                onMouseEnter={(e) => {
+                                                                    setHoveredPoint(i);
+                                                                    const svg = e.currentTarget.closest('svg');
+                                                                    const svgRect = svg.getBoundingClientRect();
+                                                                    setTooltipPos({
+                                                                        x: (p.x / 1200 * svgRect.width) - 50,
+                                                                        y: (p.y / 350 * svgRect.height) - 60
+                                                                    });
+                                                                }}
+                                                                onMouseLeave={() => setHoveredPoint(null)}
+                                                            />
+                                                            {/* Visible point */}
+                                                            <circle
+                                                                cx={p.x}
+                                                                cy={p.y}
+                                                                r={hoveredPoint === i ? "7" : "5"}
+                                                                fill="white"
+                                                                stroke="#667eea"
+                                                                strokeWidth={hoveredPoint === i ? "3" : "2.5"}
+                                                                style={{transition: 'all 0.2s ease', pointerEvents: 'none'}}
+                                                            />
+                                                        </g>
+                                                    ))}
+                                                </>
+                                            );
+                                        })()}
+                                    </svg>
+
+                                    {/* Tooltip */}
+                                    {hoveredPoint !== null && weeklySales[hoveredPoint] && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            background: '#1e3a8a',
+                                            color: 'white',
+                                            padding: '10px 15px',
+                                            borderRadius: '8px',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            pointerEvents: 'none',
+                                            zIndex: 10,
+                                            opacity: 1,
+                                            transition: 'opacity 0.2s ease',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                            whiteSpace: 'nowrap',
+                                            left: `${tooltipPos.x}px`,
+                                            top: `${tooltipPos.y}px`
+                                        }}>
+                                            <div style={{fontSize: '12px', opacity: 0.8}}>{weeklySales[hoveredPoint].week}</div>
+                                            <div style={{fontSize: '14px', fontWeight: '700'}}>${weeklySales[hoveredPoint].sales.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="no-data">No data available for selected period</div>
+                            )}
+                        </div>
+
+                        <div className="section-title">🏆 Top Selling Products</div>
+                        <div className="table-container">
+                            {productSales.length > 0 ? (
+                                <table>
+                                    <thead><tr><th>Product Name</th><th>Color</th><th className="text-right">Total Sales</th><th className="text-right">Units Sold</th></tr></thead>
+                                    <tbody>
+                                        {productSales.slice(0, 20).map((item, idx) => (
+                                            <tr key={idx}>
+                                                <td>{item.product}</td>
+                                                <td>{item.color}</td>
+                                                <td className="text-right"><span className="currency">${item.sales.toLocaleString()}</span></td>
+                                                <td className="text-right">{item.units.toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="no-data">No data available for selected period</div>
+                            )}
+                        </div>
+
+                        <div className="section-title">📅 Weekly Sales Summary</div>
+                        <div className="table-container">
+                            {weeklySales.length > 0 ? (
+                                <table>
+                                    <thead><tr><th>Week Ending</th><th className="text-right">Total Sales</th></tr></thead>
+                                    <tbody>
+                                        {weeklySales.map((item, idx) => (
+                                            <tr key={idx}><td>{item.week}</td><td className="text-right"><span className="currency">${item.sales.toLocaleString()}</span></td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="no-data">No data available for selected period</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<SalesDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>

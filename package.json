@@ -1,0 +1,12 @@
+{
+  "name": "muscle-nation-rebel-sport-dashboard",
+  "version": "1.0.0",
+  "description": "Muscle Nation x Rebel Sport Sales Dashboard",
+  "scripts": {
+    "build": "echo 'Build complete'",
+    "dev": "python serve_dashboard.py"
+  },
+  "keywords": ["sales", "dashboard"],
+  "author": "Muscle Nation",
+  "license": "MIT"
+}
