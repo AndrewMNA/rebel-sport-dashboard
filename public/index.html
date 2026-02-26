@@ -296,11 +296,6 @@
                 setShowWeekModal(true);
             };
 
-            const getWeekProducts = useMemo(() => {
-                if (!selectedWeek) return [];
-                return filteredData.filter(r => r.week === selectedWeek);
-            }, [selectedWeek, filteredData]);
-
             useEffect(() => {
                 if (!isAuthenticated) return;
 
@@ -348,6 +343,11 @@
                     }
                 });
             }, [salesData, timeFilter]);
+
+            const getWeekProducts = useMemo(() => {
+                if (!selectedWeek) return [];
+                return filteredData.filter(r => r.week === selectedWeek);
+            }, [selectedWeek, filteredData]);
 
             const totalSales = filteredData.reduce((sum, r) => sum + r.sales, 0);
             const uniqueWeeks = new Set(filteredData.map(r => r.week)).size;
